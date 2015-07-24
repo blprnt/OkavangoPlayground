@@ -56,6 +56,12 @@ function setup() {
   hrLabel.style("font-family", "Helvetica");
   hrLabel.style("font-size", "36px");
 
+  timeLabel = createSpan('').addClass('title');
+  timeLabel.position(25,115);
+  timeLabel.style("color", "#BBB");
+  timeLabel.style("font-family", "Helvetica");
+  timeLabel.style("font-size", "18px");
+
   //*-------------- DATA
   loadRange("Steve", 68,69);
 
@@ -63,7 +69,7 @@ function setup() {
 
   //Sound maker
   carrier = new p5.Oscillator(); // connects to master output by default
-  carrier.freq(340);
+  carrier.freq(220);
   carrier.amp(0);
   carrier.start();
 
@@ -87,9 +93,10 @@ function mousePressed() {
   }
 }
 
-function setBPM(bpm) {
-
-  tBPM = bpm;
+function setTime(time) {
+  var now = moment(time * 1000);
+  var d = now.tz('Africa/Windhoek').format('h:mma');     // 8am EDT
+  timeLabel.html(d);
 
 }
 
@@ -123,8 +130,8 @@ function draw() {
   var modFreq = cBPM / 60;
   modulator.freq(modFreq);
 
-  var modAmp = 0.5;//map(mouseX, 0, width, 0, 1);
-  modulator.amp(modAmp, 0.01); // fade time of 0.1 for smooth fading
+  var modAmp = 0.2;//map(mouseX, 0, width, 0, 1);
+  modulator.amp(modAmp, 0.1); // fade time of 0.1 for smooth fading
 
 }
 
@@ -132,6 +139,7 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.graphing = graphing;
   this.member = member;
   this.day = day;
+  this.startTime;
   this.w = w;
   this.h = h;
   this.fh = h;
@@ -140,6 +148,7 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.pos.y = y;
   this.beats = [];
   this.rBeats = [];
+  this.cumulativeBeats = [];
   this.canvas = createGraphics(w,this.fh);
   this.canvas.background(0);
   this.canvas.stroke(255);
@@ -198,6 +207,10 @@ HRDay.prototype.render = function() {
 
       //Find the HR record that is nearest the mouse
       var ind = floor(map(mouseX, 0, width, this.boundLeft, this.boundRight));
+      console.log(ind);
+
+      setTime(this.cumulativeBeats[ind]);
+
       var tot = 0;
       var c = 0;
       for(var i = max(0,ind - range); i < min(this.rBeats.length, ind + range); i++) {
@@ -210,6 +223,7 @@ HRDay.prototype.render = function() {
 
       if (!isNaN(hr)) {
         tBPM = hr;
+        
         //setBPM(hr);
       }
 
@@ -230,10 +244,15 @@ HRDay.prototype.render = function() {
         rect(14,0,5,-stack[2]);
       }
       pop();
+
+      //Indicator line
+      stroke(255);
+      line(mouseX,0,mouseX,this.h);
     }
     fill(0);
     noStroke();
     rect(this.w,0,-this.shadeW,this.h);
+
   pop();
 }
 
@@ -246,6 +265,9 @@ HRDay.prototype.renderBeats = function() {
     sort(this.rBeats);
     reverse(this.rBeats);
   }
+
+  var cum = this.startTime;
+
   for (var i = this.boundLeft ; i < this.boundRight; i++) {
     //Get a running average of the last 10 points to look for outliers
     var tot = 0;
@@ -259,6 +281,9 @@ HRDay.prototype.renderBeats = function() {
     //Don't render outliers.
     var minBeat = 100;
     var maxBeat = 1000;
+
+      
+
 
     this.canvas.colorMode(HSB);
 
@@ -283,6 +308,8 @@ HRDay.prototype.renderBeats = function() {
         this.canvas.stroke(255);
         this.canvas.point(x, this.h + (n * this.h));
       }
+
+      
     }
     
   }
@@ -304,7 +331,17 @@ HRDay.prototype.requestHR = function(member, day) {
 HRDay.prototype.receiveHR = function(data) {
   console.log(this);
   console.log(data);
+  
+  this.startTime = data.results.features[0].properties.t_utc;
+  console.log("START TIME:" + this.startTime);
   this.beats = data.results.features[0].properties.Beats;
+
+  var cum = this.startTime;
+  for (var i = 0; i < this.beats.length; i++) {
+    this.cumulativeBeats[i] = cum;
+    cum += this.beats[i] / 1000;
+  }
+
   totalHeartBeats += this.beats.length;
   totalBeats.html(totalHeartBeats + " heart beats.");
   this.boundRight = this.beats.length;
