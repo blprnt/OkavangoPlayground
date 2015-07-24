@@ -156,6 +156,7 @@ function draw() {
     modulator.start();
     carrier.start();
     soundStarted = true;
+    focusDay.active = true;
   } else if (($('body').scrollTop() < 150 || $('body').scrollTop() > 2100) && soundStarted) {
     modulator.stop();
     carrier.stop();
@@ -164,6 +165,7 @@ function draw() {
     $('#hrLabel').fadeOut(1000);
     focusDay.playHead = 0.682 * this.w;
     focusDay.playing = true;
+    focusDay.active = false;
   }
 
   background(30,30,30); // alpha
@@ -215,6 +217,7 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.playHead = 0.682 * this.w;
   this.playing = true;
   this.playSpeed = 1.0 / this.w;
+  this.active = false;
 }
 
 HRDay.prototype.render = function() {
@@ -234,7 +237,7 @@ HRDay.prototype.render = function() {
     if (!this.playing) {
       this.playHead = mouseX;
     } else {
-      this.playHead += this.playSpeed;
+      if (this.active) this.playHead += this.playSpeed;
       if (this.playHead > this.w) this.playHead = 0;
     }
 
