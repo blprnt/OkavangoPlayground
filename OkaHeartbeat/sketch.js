@@ -131,7 +131,7 @@ function draw() {
   modulator.freq(modFreq);
 
   var modAmp = 0.2;//map(mouseX, 0, width, 0, 1);
-  modulator.amp(modAmp, 0.1); // fade time of 0.1 for smooth fading
+  modulator.amp(modAmp, 0.03); // fade time of 0.1 for smooth fading
 
 }
 
