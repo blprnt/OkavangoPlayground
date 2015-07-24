@@ -316,8 +316,7 @@ HRDay.prototype.renderBeats = function() {
 
 HRDay.prototype.requestHR = function(member, day) {
 
-  var url = "data/Steve_68.json";
-  //apiEndPoint + "?FeatureType=ambit_hr&Member=" + member + "&expeditionDay=" + day;
+  var url = apiEndPoint + "?FeatureType=ambit_hr&Member=" + member + "&expeditionDay=" + day;
   console.log(url);
   var test = $.ajax({
     dataType: "json",
