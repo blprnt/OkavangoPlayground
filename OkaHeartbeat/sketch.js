@@ -87,7 +87,7 @@ function setup() {
   $(".graphLabel").appendTo($("#graph"));
 
   //*-------------- DATA
-  loadRange("Steve", 68,69);
+  loadRange("Steve", 57,58);
 
   //*-------------- SOUND
 
@@ -119,7 +119,7 @@ function mousePressed() {
 
 function setTime(time) {
   var now = moment(time * 1000);
-  var d = now.tz('Africa/Windhoek').format('DD/MM h:mm:ssa');     // 8am EDT
+  var d = now.tz('Africa/Johannesburg').format('DD/MM h:mm:ssa');     // 8am EDT
   timeLabel.html(d);
 
 }
@@ -141,6 +141,8 @@ function loadRange(member, start, end) {
 
 function draw() {
 
+  focusDay = days[0];
+
   //Start the sound when we get to a certain scroll position
   //Also show the heart rate labels.
 
@@ -157,13 +159,14 @@ function draw() {
     carrier.start();
     soundStarted = true;
     focusDay.active = true;
+    focusDay.playing = true;
   } else if (($('body').scrollTop() < 150 || $('body').scrollTop() > 2100) && soundStarted) {
     modulator.stop();
     carrier.stop();
     soundStarted = false;
     $('#timeLabel').fadeOut(1000);
     $('#hrLabel').fadeOut(1000);
-    focusDay.playHead = 0.682 * this.w;
+    focusDay.playHead = 0.120 * this.w;
     focusDay.playing = true;
     focusDay.active = false;
   }
@@ -202,6 +205,7 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.beats = [];
   this.rBeats = [];
   this.cumulativeBeats = [];
+  this.totalTime = 0;
   this.canvas = createGraphics(w,this.fh);
   this.canvas.background(0);
   this.canvas.stroke(255);
@@ -214,7 +218,7 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.dragX = 0;
   this.boundLeft = 0;
   this.boundRight = 0;
-  this.playHead = 0.682 * this.w;
+  this.playHead = 0.122 * this.w;
   this.playing = true;
   this.playSpeed = 1.0 / this.w;
   this.active = false;
@@ -358,13 +362,13 @@ HRDay.prototype.renderBeats = function() {
 
     this.canvas.colorMode(HSB);
 
-    if (i < 10 || abs(this.rBeats[i] - av) < 50) {
+    if (i < 10 || abs(this.rBeats[i] - av) < 75) {
 
       var n = map(this.rBeats[i], minBeat, maxBeat, 0, 1);
       n = constrain(n, 0,1);
       var ni = 1 - n;
 
-      var x = map(i, this.boundLeft, this.boundRight, 0, this.w);
+      var x = map(this.cumulativeBeats[i], this.cumulativeBeats[this.boundLeft], this.cumulativeBeats[this.boundRight - 1], 0, this.w);
 
       var c = this.canvas.color(80 + (ni * 180), 255, 50 + (200 * ni * ni));
       var ca = this.canvas.color(80 + (ni * 180), 255, 50 + (200 * ni * ni),5);
@@ -419,6 +423,7 @@ HRDay.prototype.receiveHR = function(data) {
     for (var i = 0; i < this.beats.length; i++) {
       this.cumulativeBeats[i] = cum;
       cum += this.beats[i] / 1000;
+      this.totalTime += this.beats[i];
     }
 
     totalHeartBeats += this.beats.length;
