@@ -99,10 +99,10 @@
   <div id="introText" class="graf">
   
   <p>
-  I've looked at a lot of my friend Steve's heartbeats over the last couple of months. Steve is the leader of an <a href="http://intotheokavango.org">ambitious expedition</a> I'm part of to explore the Okavango river catchment from top to bottom. By the time the team on the water pull their boats up into the sands of the Kalahari, the river will have taken them over 2,000km and it will have been more than 100 days since their launch in the Angolan highlands.
+  I've looked at a lot of my friend Steve's heartbeats over the last couple of months. Steve is the leader of an <a href="http://intotheokavango.org">ambitious expedition</a> I'm part of, setting out to explore the <a href="https://en.wikipedia.org/wiki/Okavango_Delta">Okavango Delta</a>'s catchment from top to bottom. By the time the team on the water pull their boats up into the sands of the Kalahari at the end of August, the river will have taken them over 2,000km and it will have been more than 100 days since their launch in the Angolan highlands.
 </p>
 <p>
-  Along the way they're collecting a lot of data: 6000 wildlife sightings so far, along with habitat documentation, water and air quality measurements, and interviews with local communities to learn about historical biodiversity changes. They're also collecting data from the expedition members themselves, to document gruelling and often dangerous human experience of being on expedition. So far we've store over two million heartbeats from the team. #Okavango15 is focused both Open Science and Open Story. We want our efforts to add not only to the scientific knowledge about this incredible ecosystem, but to our collective ability to understand it through narrative and storytelling.
+  Along the way they're collecting a lot of data: <a href="http://intotheokavango.org/api/species/viz?expedition=okavango_15">6000 wildlife sightings so far</a>, along with habitat documentation, water and air quality measurements, and interviews with local communities to learn about historical biodiversity changes. They're also collecting data from the expedition members themselves, to document gruelling and often dangerous human experience of being on expedition. So far we've store over two million heartbeats from the team. #Okavango15 is focused both Open Science and Open Story. We want our efforts to add not only to the scientific knowledge about this incredible ecosystem, but to our collective ability to understand it through narrative and storytelling.
 </p>
 <p>
   The sound you're hearing in the background (double check that your speakers are on) is a sonification of Steve's heartbeat from Tuesday, July 21st, at around 1:45pm. If you've been reading this at more or less the average speed, in about ten seconds, he's going to be attacked by a hippopotamus. 
@@ -110,12 +110,12 @@
 <br>
 <p>
   
-  Wait for it.
+  Wait for it...
   
 </p>
 <br>
 <p>
-  All data encode something. In this case, a timeline of about 600 numbers encode Steve's harrowing experience:
+  All data encode something. In this case, a set of about 600 numbers encode Steve's harrowing experience on the Cuito River:
 
   <blockquote><em>
   <p>
@@ -130,7 +130,7 @@
   </em>
   </blockquote>
 
-  If you click and drag on the graph below to select the bright pink stripe of data that we just heard, besinde the white line, you'll be able to see this urgent sequence more closely. Go ahead and do it.
+  If you click and drag on the graph below to select the bright pink stripe of data that we just heard, beside the white line, you'll be able to see this urgent sequence more closely. You'll also be able to move your mouse to compare the sound of the peak heart rate (169bpm) with some of the calmer moments before and after. Go ahead and do it.
 </p>
   </div>
 
@@ -140,8 +140,19 @@
 
   <div id="bottomText" class="graf">
   <p>
-    Click once anywhere on the graph to zoom back out. Now we're seeing all of Steve's heartbeats from that day: 35 thousand of them. The graph can show us a lot about that day: the duration, the pattern of activity, the maxima and minima. Graphs are good at this kind of thing. But what graphs aren't very good at is narrative. Or empathy. It's become a cliche for data visualizers to claim that we are storytellers, but really we're not. We create things that <em>hold</em> story, but we rarely create things that tell them. 
+    Click once anywhere on the graph to zoom back out. Now we're seeing all of Steve's heartbeats from June 21st: 35 thousand of them. The graph can show us a lot about that day: the duration, the pattern of activity, the maxima and minima. Graphs are good at this kind of thing. But what graphs aren't very good at is narrative. Or empathy. </p>
+
+    <p>For a long time when I was starting off with data vizualization I'd describe myself as a storyteller, but mostly this wasn't true. I created a lot of things that <em>held</em> story, but I seldom created things that told them. 
+
+    <p>One of the reasons why traditional data visualization isn't good for storytelling is its dependance on visual media.</p>
   </p>
+  <hr class="section-divider">
+  <p>
+    <em>
+    Jer Thorp is an artist and educator living in Brooklyn. He is a National Geographic Emerging Explorer and a co-founder of <a href="http://o-c-r.org">The Office for Creative Research</a>. 
+    </em>
+  </p>
+   <hr class="section-divider">
   </div>
 
   <div id="closing" class="graf">
@@ -157,7 +168,10 @@
   If you're specifically interested in heartrate data, here is the API call that this example is using, which returns all of Steven's heart beats from day 68 of the expedition: <a href="http://intotheokavango.org/api/features/?FeatureType=ambit_hr&expeditionDay=68&Member=Steve">http://intotheokavango.org/api/features/?FeatureType=ambit_hr&expeditionDay=68&Member=Steve</a>
   </p>
   </p>
-  This whole article is available in all of its source-codey glory on GitHub.
+  All of the interactive magic here was coded in <a href="p5js.org">p5.js</a>, which is my new favourite thing.
+  </p>
+  </p>
+  This whole article is available in all of its source-codey glory on <a href="https://github.com/blprnt/OkavangoPlayground/tree/master/OkaHeartbeat">GitHub</a>.
   </p>
   </div>
 </body>

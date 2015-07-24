@@ -144,24 +144,25 @@ function draw() {
   //Start the sound when we get to a certain scroll position
   //Also show the heart rate labels.
 
-  if ($('body').scrollTop() > 200) {
+  if ($('body').scrollTop() > 200 && $('body').scrollTop() < 2100) {
 
     $('#timeLabel').fadeIn(1000);
     $('#hrLabel').fadeIn(1000);
 
   }
 
-  if (!soundStarted && $('body').scrollTop() > 150) {
+  console.log($('body').scrollTop());
+  if (!soundStarted && ($('body').scrollTop() > 150 && $('body').scrollTop() < 2100)) {
     modulator.start();
     carrier.start();
     soundStarted = true;
-  } else if ($('body').scrollTop() < 150 && soundStarted) {
+  } else if (($('body').scrollTop() < 150 || $('body').scrollTop() > 2100) && soundStarted) {
     modulator.stop();
     carrier.stop();
     soundStarted = false;
     $('#timeLabel').fadeOut(1000);
     $('#hrLabel').fadeOut(1000);
-    focusDay.playHead = 840;
+    focusDay.playHead = 0.682 * this.w;
     focusDay.playing = true;
   }
 
@@ -211,9 +212,9 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.dragX = 0;
   this.boundLeft = 0;
   this.boundRight = 0;
-  this.playHead = 840;
+  this.playHead = 0.682 * this.w;
   this.playing = true;
-  this.playSpeed = 0.001;
+  this.playSpeed = 1.0 / this.w;
 }
 
 HRDay.prototype.render = function() {
@@ -227,6 +228,8 @@ HRDay.prototype.render = function() {
     noStroke();
     image(this.canvas, 0, 0);
     var range = 10;
+
+    console.log(mouseX / this.w);
 
     if (!this.playing) {
       this.playHead = mouseX;
