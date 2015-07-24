@@ -207,7 +207,6 @@ HRDay.prototype.render = function() {
 
       //Find the HR record that is nearest the mouse
       var ind = floor(map(mouseX, 0, width, this.boundLeft, this.boundRight));
-      console.log(ind);
 
       setTime(this.cumulativeBeats[ind]);
 
@@ -317,7 +316,8 @@ HRDay.prototype.renderBeats = function() {
 
 HRDay.prototype.requestHR = function(member, day) {
 
-  var url = apiEndPoint + "?FeatureType=ambit_hr&Member=" + member + "&expeditionDay=" + day;
+  var url = "data/Steve_68.json";
+  //apiEndPoint + "?FeatureType=ambit_hr&Member=" + member + "&expeditionDay=" + day;
   console.log(url);
   var test = $.ajax({
     dataType: "json",
