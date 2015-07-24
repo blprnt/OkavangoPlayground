@@ -3,7 +3,7 @@ var modulator; // this oscillator will modulate the amplitude of the carrier
 var fft; // we'll visualize the waveform 
 
 var w = $( window ).width();
-var h = $( window ).height();
+var h = 450;
 
 var Member = 'Adjany';
 
@@ -24,43 +24,67 @@ var tBPM = 100;
 
 var totalHeartBeats = 0;
 
-function preload() {
+var mainCanvas;
 
+var soundStarted = false;
+
+function preload() {
+  
 }
 
 function setup() {
-  createCanvas(w,h);
+  mainCanvas = createCanvas(w,h);
   noFill();
   background(30); // alpha
+ 
 
   //Top label
-
-  totalBeats = createSpan('').addClass('title');
-  totalBeats.position(25,15);
-  totalBeats.style("color", "#BBB");
+  totalBeats = createSpan('').addClass('graphLabel')
+  totalBeats.position(50,15);
+  totalBeats.style("display", "block");
+  totalBeats.style("position", "relative");
+  totalBeats.style("left", "10px");
+  totalBeats.style("top", "0px");
+  totalBeats.style("color", "#999");
   totalBeats.style("font-family", "Helvetica");
   totalBeats.style("font-size", "18px");
+  totalBeats.style("visibility", "hidden");
 
-
-  teamMember = createSpan('Loading...').addClass('title');
-  teamMember.position(25,35);
-  teamMember.style("color", "#FFF");
+  teamMember = createSpan('Loading...').addClass('graphLabel');
+  teamMember.position(50,35);
+  teamMember.style("display", "block");
+  teamMember.style("position", "relative");
+  teamMember.style("left", "10px");
+  teamMember.style("top", "0px");
+  teamMember.style("color", "#333");
   teamMember.style("font-family", "Helvetica");
   teamMember.style("font-size", "36px");
+  teamMember.style("visibility", "hidden");
 
   //HR label
-
-  hrLabel = createSpan('#').addClass('title');
-  hrLabel.position(25,75);
-  hrLabel.style("color", "#FFF");
+  hrLabel = createSpan('#').addClass('graphLabel').id('hrLabel');;
+  hrLabel.style("display", "block");
+  hrLabel.style("position", "fixed");
+  hrLabel.style("left", "10px");
+  hrLabel.style("top", "200px");
+  hrLabel.style("color", "#666");
   hrLabel.style("font-family", "Helvetica");
-  hrLabel.style("font-size", "36px");
+  hrLabel.style("font-size", "30px");
+  $('#hrLabel').hide();
 
-  timeLabel = createSpan('').addClass('title');
-  timeLabel.position(25,115);
-  timeLabel.style("color", "#BBB");
+  timeLabel = createSpan('').addClass('graphLabel').id('timeLabel');;
+  timeLabel.style("display", "block");
+  timeLabel.style("position", "fixed");
+  timeLabel.style("left", "10px");
+  timeLabel.style("top", "240px");
+  timeLabel.style("color", "#999");
   timeLabel.style("font-family", "Helvetica");
-  timeLabel.style("font-size", "18px");
+  timeLabel.style("font-size", "14px");
+  $('#timeLabel').hide();
+
+  //Move the canvas so it's inside the correct holder.
+  $("#defaultCanvas").appendTo($("#graph"));
+  $(".graphLabel").appendTo($("#graph"));
 
   //*-------------- DATA
   loadRange("Steve", 68,69);
@@ -71,14 +95,14 @@ function setup() {
   carrier = new p5.Oscillator(); // connects to master output by default
   carrier.freq(220);
   carrier.amp(0);
-  carrier.start();
+  //carrier.start();
 
   //Modulator for the sound
   modulator = new p5.Oscillator('sine');
   modulator.disconnect();  // disconnect the modulator from master output
   modulator.freq(5);
   modulator.amp(1);
-  modulator.start();
+  //modulator.start();
 
   // Modulate the carrier's amplitude with the modulator
   // Optionally, we can scale the signal.
@@ -95,7 +119,7 @@ function mousePressed() {
 
 function setTime(time) {
   var now = moment(time * 1000);
-  var d = now.tz('Africa/Windhoek').format('h:mma');     // 8am EDT
+  var d = now.tz('Africa/Windhoek').format('DD/MM h:mm:ssa');     // 8am EDT
   timeLabel.html(d);
 
 }
@@ -116,6 +140,31 @@ function loadRange(member, start, end) {
 }
 
 function draw() {
+
+  //Start the sound when we get to a certain scroll position
+  //Also show the heart rate labels.
+
+  if ($('body').scrollTop() > 200) {
+
+    $('#timeLabel').fadeIn(1000);
+    $('#hrLabel').fadeIn(1000);
+
+  }
+
+  if (!soundStarted && $('body').scrollTop() > 150) {
+    modulator.start();
+    carrier.start();
+    soundStarted = true;
+  } else if ($('body').scrollTop() < 150 && soundStarted) {
+    modulator.stop();
+    carrier.stop();
+    soundStarted = false;
+    $('#timeLabel').fadeOut(1000);
+    $('#hrLabel').fadeOut(1000);
+    focusDay.playHead = 840;
+    focusDay.playing = true;
+  }
+
   background(30,30,30); // alpha
 
   focusDay = days[floor(map(mouseY, 0, height, 0, days.length))];
@@ -130,7 +179,7 @@ function draw() {
   var modFreq = cBPM / 60;
   modulator.freq(modFreq);
 
-  var modAmp = 0.2;//map(mouseX, 0, width, 0, 1);
+  var modAmp = 0.5;//map(mouseX, 0, width, 0, 1);
   modulator.amp(modAmp, 0.03); // fade time of 0.1 for smooth fading
 
 }
@@ -140,6 +189,7 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.member = member;
   this.day = day;
   this.startTime;
+  this.dateTime;
   this.w = w;
   this.h = h;
   this.fh = h;
@@ -161,6 +211,9 @@ function HRDay(member, day, x, y, w, h, graphing) {
   this.dragX = 0;
   this.boundLeft = 0;
   this.boundRight = 0;
+  this.playHead = 840;
+  this.playing = true;
+  this.playSpeed = 0.001;
 }
 
 HRDay.prototype.render = function() {
@@ -170,14 +223,24 @@ HRDay.prototype.render = function() {
   push();
     translate(this.pos.x, this.pos.y);
     //tint(255, (focusDay == this) ? 255:150);
+    fill(255);
+    noStroke();
     image(this.canvas, 0, 0);
     var range = 10;
 
-    //Is this the Day that the mouse is currently over?
-    if (focusDay == this) {
+    if (!this.playing) {
+      this.playHead = mouseX;
+    } else {
+      this.playHead += this.playSpeed;
+      if (this.playHead > this.w) this.playHead = 0;
+    }
+
+    //Is this the Day that the mouse is currently over or are we playing??
+    if (focusDay == this || this.playing) {
 
       //Drag rectangle
       if (mouseIsPressed && !this.dragging && !this.buttonOver) {
+        this.playing = false;
         console.log("Start drag");
         this.dragging = true;
         this.dragX = mouseX;
@@ -205,8 +268,11 @@ HRDay.prototype.render = function() {
         
       }
 
+
+      
+
       //Find the HR record that is nearest the mouse
-      var ind = floor(map(mouseX, 0, width, this.boundLeft, this.boundRight));
+      var ind = floor(map(this.playHead, 0, width, this.boundLeft, this.boundRight));
 
       setTime(this.cumulativeBeats[ind]);
 
@@ -246,7 +312,7 @@ HRDay.prototype.render = function() {
 
       //Indicator line
       stroke(255);
-      line(mouseX,0,mouseX,this.h);
+      line(this.playHead,0,this.playHead,this.h);
     }
     fill(0);
     noStroke();
@@ -257,7 +323,7 @@ HRDay.prototype.render = function() {
 
 HRDay.prototype.renderBeats = function() {
   this.canvas.background(0);
-  this.shadeW = focusDay.w;
+  this.shadeW = this.w;
 
   this.rBeats = this.beats.slice(0);
   if (this.sorted) {
@@ -328,25 +394,34 @@ HRDay.prototype.requestHR = function(member, day) {
 }
 
 HRDay.prototype.receiveHR = function(data) {
-  console.log(this);
-  console.log(data);
+  //console.log(this);
+  //console.log(data);
   
-  this.startTime = data.results.features[0].properties.t_utc;
-  console.log("START TIME:" + this.startTime);
-  this.beats = data.results.features[0].properties.Beats;
+  
+  //console.log("START TIME:" + this.startTime);
+  if (data.results.features.length == 0) {
+    console.log("MISSING: " + this.dateTime);
+  } else {
 
-  var cum = this.startTime;
-  for (var i = 0; i < this.beats.length; i++) {
-    this.cumulativeBeats[i] = cum;
-    cum += this.beats[i] / 1000;
+    this.startTime = data.results.features[0].properties.t_utc;
+  this.dateTime = data.results.features[0].properties.DateTime;
+    this.beats = data.results.features[0].properties.Beats;
+
+    
+
+    var cum = this.startTime;
+    for (var i = 0; i < this.beats.length; i++) {
+      this.cumulativeBeats[i] = cum;
+      cum += this.beats[i] / 1000;
+    }
+
+    totalHeartBeats += this.beats.length;
+    totalBeats.html(totalHeartBeats + " heart beats.");
+    this.boundRight = this.beats.length;
+    this.renderBeats(this.beats, this.w, 100, false);
+    this.loaded = true;
+    this.tshadeW = 0;
   }
-
-  totalHeartBeats += this.beats.length;
-  totalBeats.html(totalHeartBeats + " heart beats.");
-  this.boundRight = this.beats.length;
-  this.renderBeats(this.beats, this.w, 100, false);
-  this.loaded = true;
-  this.tshadeW = 0;
 }
 
 

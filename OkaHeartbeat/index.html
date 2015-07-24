@@ -7,10 +7,158 @@
   <script language="javascript" type="text/javascript" src="moment-timezone.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script language="javascript" type="text/javascript" src="sketch.js"></script>
+  
 
-  <style> body {padding: 0; margin: 0;} </style>
+  <style> 
+    body {
+      padding: 0;
+      margin: 0;
+      font-family: "jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+      letter-spacing: -0.02em;
+      font-weight: 400;
+      font-style: normal;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -moz-font-feature-settings: "liga" on;
+      color: rgba(0,0,0,0.8);
+      font-size: 18px;
+      line-height: 1.4;
+    } 
+    .graf {
+      width:65%;
+      margin:25px;
+      margin:auto;
+    }
+    #header {
+      background-image: url("img/heartHeader.png");
+      background-size: cover;
+      width:100%;
+      height:350px;
+    }
+    #closing {
+      font-size:14px;
+    }
+    hr.section-divider {
+      display: block;
+      width: 100px;
+      margin: 51px auto 41px auto;
+      border: 0;
+      border-top: 1px solid rgba(0,0,0,0.15);
+    }
+    p {
+      margin-bottom: 30px;
+    }
+    a {
+      color: inherit;
+      text-decoration: underline;
+    }
+    h2 {
+      font-family: "jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      font-style: normal;
+      font-size: 36px;
+      margin-left: -1.8px;
+      line-height: 1.2;
+      margin-top: 40px;
+      margin-bottom: 4px;
+      color: rgba(0,0,0,0.8);
+    }
+
+    #title {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #header {
+      margin-bottom: 80px;
+    }
+
+    #header h2 {
+      color:#FFF;
+      width:525px;
+      margin:auto;
+      vertical-align: middle;
+    }
+    #closing h2 {
+      font-size:24px;
+    }
+  
+
+  </style>
 </head>
 
 <body>
+  <div id="header">
+    <div id="title">
+     <h2>Heartbeats and Hippopotami</h2>
+    </div>
+  </div>
+  <div id="introText" class="graf">
+  
+  <p>
+  I've looked at a lot of my friend Steve's heartbeats over the last couple of months. Steve is the leader of an <a href="http://intotheokavango.org">ambitious expedition</a> I'm part of to explore the Okavango river catchment from top to bottom. By the time the team on the water pull their boats up into the sands of the Kalahari, the river will have taken them over 2,000km and it will have been more than 100 days since their launch in the Angolan highlands.
+</p>
+<p>
+  Along the way they're collecting a lot of data: 6000 wildlife sightings so far, along with habitat documentation, water and air quality measurements, and interviews with local communities to learn about historical biodiversity changes. They're also collecting data from the expedition members themselves, to document gruelling and often dangerous human experience of being on expedition. So far we've store over two million heartbeats from the team. #Okavango15 is focused both Open Science and Open Story. We want our efforts to add not only to the scientific knowledge about this incredible ecosystem, but to our collective ability to understand it through narrative and storytelling.
+</p>
+<p>
+  The sound you're hearing in the background (double check that your speakers are on) is a sonification of Steve's heartbeat from Tuesday, July 21st, at around 1:45pm. If you've been reading this at more or less the average speed, in about ten seconds, he's going to be attacked by a hippopotamus. 
+</p>
+<br>
+<p>
+  
+  Wait for it.
+  
+</p>
+<br>
+<p>
+  All data encode something. In this case, a timeline of about 600 numbers encode Steve's harrowing experience:
+
+  <blockquote><em>
+  <p>
+  "The front tusks pierced the hull near my left foot and flipped the mokoro over in a single push. Capsized, we were now both in the water on top of the hippo. My first thought was get my legs out of the water. I met Giles on top of the overturned hull. I hear my brother, Chris, shout.
+  </p>
+  <p>
+  "Swim!!"
+  </p>
+  </p>
+  We instantly slip into the water and make for the bank, frantically swimming like no one taught us how. I have never stressed, raced and imagined so much. Seconds of frenzy that I will never forget. We were convinced the follow-up rush and bite was coming. Giles touches my leg and my heart stops beating. The current was taking us and the bank seems further away. Suddenly it was there. Slippery and steep."
+  <p>
+  </em>
+  </blockquote>
+
+  If you click and drag on the graph below to select the bright pink stripe of data that we just heard, besinde the white line, you'll be able to see this urgent sequence more closely. Go ahead and do it.
+</p>
+  </div>
+
+  </p>
+
+  <div id="graph"></div>
+
+  <div id="bottomText" class="graf">
+  <p>
+    Click once anywhere on the graph to zoom back out. Now we're seeing all of Steve's heartbeats from that day: 35 thousand of them. The graph can show us a lot about that day: the duration, the pattern of activity, the maxima and minima. Graphs are good at this kind of thing. But what graphs aren't very good at is narrative. Or empathy. It's become a cliche for data visualizers to claim that we are storytellers, but really we're not. We create things that <em>hold</em> story, but we rarely create things that tell them. 
+  </p>
+  </div>
+
+  <div id="closing" class="graf">
+  <h2>Notes</h2>
+  <p>
+  I love Medium. Not only do I publish a fair number of articles there, I also use it as a word processor whenever I have to write pretty much anything. My intention with this article is not to rip the Medium style, but to suggest how data elements could be added to its already excellent design for reading. 
+  </p>
+  <h2>Resources</h2>
+  <p>
+  Visit <a href="http://intotheokavango.org">intotheokavango.org</a> to explore all of the data that has come in from the field since the beginning of the expedition. Also, follow us on <a href="http://twitter.com/intotheokavango">Twitter</a> & <a href="http://instagram.com/intotheokavango">Instagram</a> for a curious mix of wildlife and data.
+  </p>
+  <p>
+  If you're specifically interested in heartrate data, here is the API call that this example is using, which returns all of Steven's heart beats from day 68 of the expedition: <a href="http://intotheokavango.org/api/features/?FeatureType=ambit_hr&expeditionDay=68&Member=Steve">http://intotheokavango.org/api/features/?FeatureType=ambit_hr&expeditionDay=68&Member=Steve</a>
+  </p>
+  </p>
+  This whole article is available in all of its source-codey glory on GitHub.
+  </p>
+  </div>
 </body>
 </html>
