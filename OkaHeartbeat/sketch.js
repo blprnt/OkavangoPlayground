@@ -28,6 +28,14 @@ var mainCanvas;
 
 var soundStarted = false;
 
+var mainPath;
+
+var timeMode = 0;
+var startTimeField = 0;
+var startTimeApp = 0;
+
+var nowField;
+
 function preload() {
   
 }
@@ -35,7 +43,12 @@ function preload() {
 function setup() {
   mainCanvas = createCanvas(w,h);
   noFill();
-  background(30); // alpha
+  background(0); // alpha
+
+  //Set time to be about a minute before the hippo attack.
+  var startMoment = new Date(Date.UTC(2015, 06, 11, 8, 57, 00));
+  startTimeField = startMoment.getTime();
+  startTimeApp = (new Date()).getTime();
  
 
   //Top label
@@ -89,6 +102,9 @@ function setup() {
   //*-------------- DATA
   loadRange("Steve", 57,58);
 
+  //*-------------- PATH DATA
+  mainPath = loadPath("Steve", 57)
+
   //*-------------- SOUND
 
   //Sound maker
@@ -117,10 +133,51 @@ function mousePressed() {
   }
 }
 
+function clock() {
+  var now = new Date();
+  var elapsed = now.getTime() - startTimeApp;
+  nowField = startTimeField + elapsed;
+  //This value is in seconds
+  setTime(nowField);
+}
+
 function setTime(time) {
-  var now = moment(time * 1000);
-  var d = now.tz('Africa/Johannesburg').format('DD/MM h:mm:ssa');     // 8am EDT
+  //This parameter takes milliseconds(?)
+  var now = moment(time);
+  var d = now.tz('Africa/Johannesburg').format('DD/MM/YYYY h:mm:ssa');     // 8am EDT
   timeLabel.html(d);
+  //setTimeOnPath(time);
+}
+
+function setTimeOnPath(time) {
+  if (mainPath != undefined && mainPath.points != undefined) {
+  //Go through the paths and find the one that is before the time point
+  for(var i = 1; i < mainPath.points.length - 1; i++) {
+    var p = mainPath.points[i];
+    var t = p.properties.t_utc;
+
+    if (t > time) {
+      //.css("border-bottom", "thick dotted #ff0000");
+      //get the fraction between this time and the next segment's time
+      var p1 = mainPath.points[i - 1];
+      var t1 = p1.properties.t_utc;
+      var f = (time - t1)/(t - t1);
+      if (f < 1 && f > 0) {
+        $('#pathMarker').appendTo(mainPath.pathSegments[i -1]);
+        $('#pathMarker').css("left", f * mainPath.pathSegments[i].width());
+      } 
+
+      break;
+    }
+  }
+  
+  }
+}
+
+function loadPath(member, day) {
+  var p = new Path(member, day);
+  p.requestPath();
+  return(p);
 
 }
 
@@ -141,7 +198,19 @@ function loadRange(member, start, end) {
 
 function draw() {
 
+  timeMode = (mouseY > 0 && mouseY < height) ? 1:0;
+
   focusDay = days[0];
+
+  for (var i =0 ; i < mainPath.pathSegments.length; i++) {
+      var s = mainPath.pathSegments[i];
+      if (s.position().top < $('body').scrollTop() && s.css('opacity') == 0) {
+        s.animate({opacity: 1}, 1000); 
+      } 
+  }
+
+  //Clock
+  if (timeMode == 0) clock();
 
   //Start the sound when we get to a certain scroll position
   //Also show the heart rate labels.
@@ -153,8 +222,17 @@ function draw() {
 
   }
 
-  console.log($('body').scrollTop());
+  //console.log($('body').scrollTop());
   if (!soundStarted && ($('body').scrollTop() > 150 && $('body').scrollTop() < 2100)) {
+    var startMoment = new Date(Date.UTC(2015, 06, 11, 8, 57, 00));
+
+    //reset the clock if we're coming from the top
+    if ($('body').scrollTop() < 300) {
+      console.log("START:" + startMoment);
+      startTimeField = startMoment.getTime();
+      startTimeApp = (new Date()).getTime();
+   }
+
     modulator.start();
     carrier.start();
     soundStarted = true;
@@ -190,11 +268,107 @@ function draw() {
 
 }
 
+function Path(member, day) {
+  this.member = member;
+  this.day = day;
+  this.points;
+  this.pathSegments = [];
+}
+
+Path.prototype.requestPath = function() {
+  console.log("LOAD PATH " + this.member + " " + this.day);
+  var url = apiEndPoint + "?FeatureType=ambit_geo&Member=" + this.member + "&limit=800&expeditionDay=" + this.day;
+  console.log(url);
+  var test = $.ajax({
+    dataType: "json",
+    url: url,
+    context: this,
+    success: this.receivePath
+  });
+}
+
+Path.prototype.receivePath = function(data) {
+  console.log("PATH RECEIVED");
+  this.points = data.results.features;
+  this.build();
+}
+
+Path.prototype.build = function() {
+  //Calc min and max lat/lon
+  var minBounds = [180,180];
+  var maxBounds = [-180,-180];
+  for(var i = 0; i < this.points.length; i++) {
+    var geom = this.points[i].geometry.coordinates;
+    if (geom[0] < minBounds[0]) minBounds[0] = geom[0];
+    if (geom[1] < minBounds[1]) minBounds[1] = geom[1];
+    if (geom[0] > maxBounds[0]) maxBounds[0] = geom[0];
+    if (geom[1] > maxBounds[1]) maxBounds[1] = geom[1];
+  }
+
+  //Make the marker
+  $('#pathHolder').append("<div id='pathMarker'></div>");
+  //Draw it
+  $('#pathHolder').append("<div id='pathSystem'></div>").css({"display":"block", "position":"relative"});
+  
+  
+  var p0 = this.points[0].geometry.coordinates;
+  var mag = 33500;
+  for(var i = 0; i < this.points.length - 1; i++) {
+    
+    var p1 = this.points[i].geometry.coordinates;
+    var pd = [p1[0] - p0[0], p1[1] - p0[1]];
+
+    var p2 = this.points[i + 1].geometry.coordinates;
+    var pd2 = [p2[0] - p0[0], p2[1] - p0[1]];
+
+    var dx = p2[0] - p1[0];
+    var dy = p2[1] - p1[1];
+
+    var d = Math.sqrt((dx * dx) + (dy * dy));
+    var th = Math.atan2(dy, dx);
+
+
+    $('#pathHolder').append("<div id='path_" + i + "'> </div>")
+    $('#pathHolder').css({
+        "display":"block",
+        "position":"absolute",
+        "left":"48%",
+        "top":200,
+        "z-index": -1
+    })
+    $('#path_' + i).append("<div id='line_" + i + "'></div>");
+    $('#path_' + i).css(
+      {
+        "display":"block", 
+        "position":"absolute", 
+        "top": pd[1] * -mag,
+        "left": (pd[0] * mag),
+        "width": d * mag,
+        "transform-origin": "top left",
+        "-webkit-transform": "rotate(" + -th +  "rad)",
+        "opacity": 0
+      })
+    $('#line_' + i).css(
+      {
+        "display":"block", 
+        "position":"absolute", 
+        "border-bottom": "dotted #4BFF87",
+        "width": d * mag,
+        "transform-origin": "top left",
+      });
+
+    this.pathSegments.push($('#path_' + i));
+  }
+  
+  
+}
+
 function HRDay(member, day, x, y, w, h, graphing) {
   this.graphing = graphing;
   this.member = member;
   this.day = day;
   this.startTime;
+  this.endTime;
   this.dateTime;
   this.w = w;
   this.h = h;
@@ -234,9 +408,9 @@ HRDay.prototype.render = function() {
     fill(255);
     noStroke();
     image(this.canvas, 0, 0);
-    var range = 10;
+    
 
-    console.log(mouseX / this.w);
+    //console.log(mouseX / this.w);
 
     if (!this.playing) {
       this.playHead = mouseX;
@@ -263,44 +437,59 @@ HRDay.prototype.render = function() {
         if (this.dragging) {
           var nbl = floor(map(this.dragX, 0, this.w, this.boundLeft, this.boundRight));
           var nbr = floor(map(mouseX, 0, this.w, this.boundLeft, this.boundRight));
+          console.log("stop drag" + nbl + ":" + nbr)
           if (nbr - nbl > 100) {
-          this.boundLeft = nbl ;
-          this.boundRight = nbr;
+            this.boundLeft = nbl ;
+            this.boundRight = nbr;
+            this.renderBeats();
           } else {
+            var refresh = false;
+            if (this.boundLeft != 0) refresh = true;
             this.boundLeft = 0;
             this.boundRight = this.beats.length;
+            if (refresh) this.renderBeats();
+
           }
-          this.renderBeats();
+          
           this.dragging = false;
-          console.log("End drag" + nbl + ":" + nbr);
 
         }
         
       }
 
 
+      var ind;
+      var range = 3;
+
+      if (timeMode == 0) {
+        //Find the HR record that is closest to the current time
+        var f = (((nowField/1000) - this.startTime) / (this.endTime - this.startTime));
+        ind = floor(f * this.rBeats.length);
+
+      } else {
+        ind = floor(map(this.playHead, 0, this.w, this.boundLeft, this.boundRight));
+        setTime(this.cumulativeBeats[ind] * 1000); 
+      }
+
+      //Set the HR record off of index
+        var tot = 0;
+        var c = 0;
+        for(var i = max(0,ind - range); i < min(this.rBeats.length, ind + range); i++) {
+          tot += this.rBeats[i];
+          c ++;
+        }
+        //Average interval between heart beats (millis per beat)
+        var av = tot / c;
+        var hr = 60000 / av;
+
+        if (!isNaN(hr)) {
+          tBPM = hr;
+        }
       
 
-      //Find the HR record that is nearest the mouse
-      var ind = floor(map(this.playHead, 0, width, this.boundLeft, this.boundRight));
+      
 
-      setTime(this.cumulativeBeats[ind]);
-
-      var tot = 0;
-      var c = 0;
-      for(var i = max(0,ind - range); i < min(this.rBeats.length, ind + range); i++) {
-        tot += this.rBeats[i];
-        c ++;
-      }
-      //Average interval between heart beats (millis per beat)
-      var av = tot / c;
-      var hr = 60000 / av;
-
-      if (!isNaN(hr)) {
-        tBPM = hr;
-        
-        //setBPM(hr);
-      }
+      
 
       //Sort button 
       push();
@@ -414,7 +603,7 @@ HRDay.prototype.receiveHR = function(data) {
   } else {
 
     this.startTime = data.results.features[0].properties.t_utc;
-  this.dateTime = data.results.features[0].properties.DateTime;
+    this.dateTime = data.results.features[0].properties.DateTime;
     this.beats = data.results.features[0].properties.Beats;
 
     
@@ -425,6 +614,7 @@ HRDay.prototype.receiveHR = function(data) {
       cum += this.beats[i] / 1000;
       this.totalTime += this.beats[i];
     }
+    this.endTime = cum;
 
     totalHeartBeats += this.beats.length;
     totalBeats.html(totalHeartBeats + " heart beats.");
@@ -432,6 +622,7 @@ HRDay.prototype.receiveHR = function(data) {
     this.renderBeats(this.beats, this.w, 100, false);
     this.loaded = true;
     this.tshadeW = 0;
+    
   }
 }
 

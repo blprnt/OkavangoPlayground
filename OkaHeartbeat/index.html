@@ -31,7 +31,7 @@
       margin:auto;
     }
     #header {
-      background-image: url("img/heartHeader.png");
+      /*background-image: url("img/heartHeader.png");*/
       background-size: cover;
       width:100%;
       height:350px;
@@ -73,17 +73,31 @@
     }
 
     #header {
-      margin-bottom: 80px;
+      margin-bottom: 0px;
     }
 
     #header h2 {
-      color:#FFF;
+      color:#000;
       width:525px;
       margin:auto;
       vertical-align: middle;
     }
+    #header h3 {
+      margin:auto;
+      vertical-align: middle;
+      width:525px;
+    }
     #closing h2 {
       font-size:24px;
+    }
+
+    #pathMarker {
+      display:block;
+      position:relative;
+      width:20px;
+      height:20px;
+      background-color:#FF0000;
+      visibility: hidden;
     }
   
 
@@ -93,25 +107,25 @@
 <body>
   <div id="header">
     <div id="title">
-     <h2>Heartbeats and Hippopotami</h2>
+     <h2>Open Story + Open Data</h2>
+     <h3>Heartbeats, hippopotami, and threading human experience into datasets.</h3>
     </div>
   </div>
+  <div id="pathHolder"></div>
   <div id="introText" class="graf">
   
   <p>
-  I've looked at a lot of my friend Steve's heartbeats over the last couple of months. Steve is the leader of an <a href="http://intotheokavango.org">ambitious expedition</a> I'm part of, setting out to explore the <a href="https://en.wikipedia.org/wiki/Okavango_Delta">Okavango Delta</a>'s catchment from top to bottom. By the time the team on the water pull their boats up into the sands of the Kalahari at the end of August, the river will have taken them over 2,000km and it will have been more than 100 days since their launch in the Angolan highlands.
+ On May 17th, a small team of researchers and Ba'Yei polers set out to explore the Okavango Delta's catchment from top to bottom. By the time the team on the water pulls their boats up into the sands of the Kalahari at the end of August, the river will have taken them over 2,000km and it will have been more than 100 days since their launch in the Angolan highlands. They will have eaten more than a thousand kilograms of beans, swatted a small army of mosquitos, and threaded their narrow boats through dozens of pods of angry hippopotami. They also will have collected a lot of data, all of which is freely available through an open API:
 </p>
 <p>
-  Along the way they're collecting a lot of data: <a href="http://intotheokavango.org/api/species/viz?expedition=okavango_15">6000 wildlife sightings so far</a>, along with habitat documentation, water and air quality measurements, and interviews with local communities to learn about historical biodiversity changes. They're also collecting data from the expedition members themselves, to document gruelling and often dangerous human experience of being on expedition. So far we've store over two million heartbeats from the team. #Okavango15 is focused both Open Science and Open Story. We want our efforts to add not only to the scientific knowledge about this incredible ecosystem, but to our collective ability to understand it through narrative and storytelling.
+  <a href="http://intotheokavango.org/api/features/viz?FeatureType=sighting&limit=10000&order=descending&expedition=okavango_15">7,777 wildlife sightings</a>, <a href="http://intotheokavango.org/api/features/?FeatureType=sensor&limit=100&order=descending&expedition=okavango_15">17,822 sensor readings</a>, <a href="http://intotheokavango.org/api/features/?FeatureType=image&limit=100&order=descending&expedition=okavango_15">2,042 images</a>, <a href="http://intotheokavango.org/api/features/?FeatureType=ambit_geo&limit=100&order=descending&expedition=okavango_15">105,566 GPS points</a>, and <a href="http://intotheokavango.org/api/features/?FeatureType=ambit_hr&limit=1&order=descending&expedition=okavango_15">3.1 million heart beats</a> so far.
 </p>
 <p>
-  The sound you're hearing in the background (double check that your speakers are on) is a sonification of Steve's heartbeat from Saturday, July 11th, at around 10:58am. If you've been reading this at more or less the average speed, in about ten seconds, he's going to be attacked by a hippopotamus. 
+But what good is all of this open data without open story?
 </p>
 <br>
 <p>
-  
-  Wait for it...
-  
+The sound you're hearing in the background (double check that your speakers are on) is a sonification of expedition leader Steve Boyes' heartbeat from Saturday, July 11th, at around 10:58am. He's just about to be attacked by a three tonne hippopotamus.
 </p>
 <br>
 <p>
@@ -124,14 +138,15 @@
   <p>
   "Swim!!"
   </p>
-  </p>
-  We instantly slip into the water and make for the bank, frantically swimming like no one taught us how. I have never stressed, raced and imagined so much. Seconds of frenzy that I will never forget. We were convinced the follow-up rush and bite was coming. Giles touches my leg and my heart stops beating. The current was taking us and the bank seems further away. Suddenly it was there. Slippery and steep."
   <p>
+  We instantly slip into the water and make for the bank, frantically swimming like no one taught us how. I have never stressed, raced and imagined so much. Seconds of frenzy that I will never forget. We were convinced the follow-up rush and bite was coming. Giles touches my leg and my heart stops beating. The current was taking us and the bank seems further away. Suddenly it was there. Slippery and steep."
+  </p>
   </em>
   </blockquote>
-
-  The graph below visualizes all of Steve's heartbeats from June 21st: 35 thousand of them. If you click and drag on it to select the bright pink stripe of data that we just heard, beside the white line, you'll be able to see this urgent sequence more closely. You'll also be able to move your mouse to compare the sound of the peak heart rate (169bpm) with some of the calmer moments before and after. Go ahead and do it.
+<p>
+  A typical way to decode the data, to retrieve the experience from the numbers, is through visualization. The graph below shows all of Steve's heartbeats from June 21st: 35 thousand of them. If you click and drag on it to select the bright pink stripe of data that we just heard, beside the white line, you'll be able to see this urgent sequence more closely. You'll also be able to move your mouse to compare the sound of the peak heart rate with some of the calmer moments before and after. Go ahead and do it.
 </p>
+
   </div>
 
   </p>
@@ -139,13 +154,60 @@
   <div id="graph"></div>
 
   <div id="bottomText" class="graf">
-  <p>
-    Click once anywhere on the graph to zoom back out. The graph can show us a lot about that day: the duration, the pattern of activity, the maxima and minima. Graphs are good at this kind of thing. But what graphs aren't very good at is narrative. Or empathy. </p>
+  
+<p>
+  This data shows us a lot about that day: the duration, the pattern of activity, the maxima and minima. But what it doesn't implicitly give us is narrative. This is because data, in itself, holds no story at all. We can build scaffolding for it by visualizing (or sonifying, or performing) data, but the story itself only manifests when a human (ie. you) looks at our graph.
+</p>
 
-    <p>For a long time when I was starting off with data vizualization I'd describe myself as a storyteller, but mostly this wasn't true. I created a lot of things that <em>held</em> story, but I seldom created things that told them. 
+<p>
+  Very few Open Data releases make any attempt to foster narrative. The datasets might be fascinating, the APIs usable; but without any structure for story, it's hard to make anything with. It's the digital equivalent of a pile of free IKEA parts, kicked out to the curb with no instructions.
+</p>
 
-    <p>One of the reasons why traditional data visualization isn't good for storytelling is its dependance on visual media.</p>
-  </p>
+<p>
+With Into the Okavango, we set out to make the expedition both Open Data and Open Story. Here are our three guiding principles:
+</p>
+
+<h2> 1. Make it easy to put the data in context</h2>
+
+<p>
+Wherever possible, we've endeavored to provide framing for the data that we release. For a simple example of this we can look at the visualization and map views in our API. Using small variations of the same URL, people can download sightings as raw data, or see the results on a map, or as a graph:
+</p>
+
+<p>
+<a href="http://intotheokavango.org/api/features/?FeatureType=sighting&expedition=okavango_15&Taxonomy.Order=Osteoglossiformes">http://intotheokavango.org/api/features/?FeatureType=sighting&expedition=okavango_15&Taxonomy.Order=Osteoglossiformes</a>
+</p>
+
+<p>
+<a href="http://intotheokavango.org/api/features/viz?FeatureType=sighting&expedition=okavango_15&Taxonomy.Order=Osteoglossiformes">http://intotheokavango.org/api/features/viz?FeatureType=sighting&expedition=okavango_15&Taxonomy.Order=Osteoglossiformes</a>
+</p>
+
+<p>
+<a href="http://intotheokavango.org/api/features/map?FeatureType=sighting&expedition=okavango_15&Taxonomy.Order=Osteoglossiformes">http://intotheokavango.org/api/features/map?FeatureType=sighting&expedition=okavango_15&Taxonomy.Order=Osteoglossiformes</a>
+</p>
+
+<h2>2. Facilitate broad engagement</h2>
+<p>
+  All of us who release Open Data have a fantasy audience, a group of JSON-savvy enthusiasts who are waiting to spend their evenings and weekends making fascinating things with our datasets. But any other interested parties are usually blocked at the door, through a combination of obfuscation and politics. With ItO, we've tried to provide simple access points to data that anyone can use. We're also releasing samples and source code on GitHub, and are working to create a series of curricula for use by students and teachers.
+</p>
+
+<p>
+  I often describe APIs as bridges. I think one of the issues we have right now is that these bridges are being built for heavy machinery, and not for foot traffic. What does an API look like that is a pedestrian bridge?
+</p>
+
+<h2>3. Frame the data with human experience</h2>
+<p>
+  Science doesn't just happen. Humans do science. Humans with real lives, real foibles, real blistered feet. As much as possible, we've tried to pair data about human experience (tweets, photographs, sound recordings, Medium posts) alongside the core research data. And we've kept this human data in the same format as the science data (GeoJSON) so that it's easy to thread one data set through another.
+</p>
+
+<p>
+As you were looking at Steve's heart rate graph you might have noticed a second spike, about an hour after the hippo attack. This confused me; from the GPS points I knew they had continued down the river after only a short break. Had there been another scare? As I was drafting this post, I sent him an e-mail, asking what he thought could have caused that second elevation in heart rate. A few days passed.
+</p>
+
+<p>
+Finally, an e-mail arrived. After the attack, Steve told me, they got back into the boats. He tried to stay as calm as possible. After forty minutes, he paddled his boat to the side of the river, and anchored it loosely in the reeds. He took out the satellite phone and called his wife. He told her about the tusks piercing the hull, about dangling helpless in the river, about the frantic swim to shore.
+</p>
+
+
   <hr class="section-divider">
   <p>
     <em>
@@ -160,6 +222,7 @@
   <p>
   I love Medium. Not only do I publish a fair number of articles there, I also use it as a word processor whenever I have to write pretty much anything. My intention with this article is not to rip the Medium style, but to suggest how data elements could be added to its already excellent design for reading. 
   </p>
+  <p> Many, many people have helped in the creation of the ItO API + site. Special thanks to Brian House, Shah Selbe, Ellery Royston, Ian Ardouin-Fumat and Genevieve Hoffman</p>
   <h2>Resources</h2>
   <p>
   Visit <a href="http://intotheokavango.org">intotheokavango.org</a> to explore all of the data that has come in from the field since the beginning of the expedition. Also, follow us on <a href="http://twitter.com/intotheokavango">Twitter</a> & <a href="http://instagram.com/intotheokavango">Instagram</a> for a curious mix of wildlife and data.
