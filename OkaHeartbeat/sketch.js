@@ -204,8 +204,8 @@ function draw() {
 
   for (var i =0 ; i < mainPath.pathSegments.length; i++) {
       var s = mainPath.pathSegments[i];
-      if (s.position().top < $('body').scrollTop() && s.css('opacity') == 0) {
-        s.animate({opacity: 1}, 1000); 
+      if (s.position().top < $('body').scrollTop() + 200 && s.css('opacity') == 0) {
+        s.animate({opacity: 1}, 5000); 
       } 
   }
 
@@ -215,15 +215,17 @@ function draw() {
   //Start the sound when we get to a certain scroll position
   //Also show the heart rate labels.
 
-  if ($('body').scrollTop() > 200 && $('body').scrollTop() < 2100) {
+  var soundStartY = $('#soundStart').position().top - 300;
+  var soundEndY = $('#soundEnd').position().top - 300;
+
+  if ($('body').scrollTop() > soundStartY && $('body').scrollTop() < soundEndY) {
 
     $('#timeLabel').fadeIn(1000);
     $('#hrLabel').fadeIn(1000);
 
   }
-
-  //console.log($('body').scrollTop());
-  if (!soundStarted && ($('body').scrollTop() > 150 && $('body').scrollTop() < 2100)) {
+  
+  if (!soundStarted && ($('body').scrollTop() > soundStartY && $('body').scrollTop() < soundEndY)) {
     var startMoment = new Date(Date.UTC(2015, 06, 11, 8, 57, 00));
 
     //reset the clock if we're coming from the top
@@ -231,14 +233,14 @@ function draw() {
       console.log("START:" + startMoment);
       startTimeField = startMoment.getTime();
       startTimeApp = (new Date()).getTime();
-   }
-
+    } 
     modulator.start();
     carrier.start();
     soundStarted = true;
     focusDay.active = true;
     focusDay.playing = true;
-  } else if (($('body').scrollTop() < 150 || $('body').scrollTop() > 2100) && soundStarted) {
+
+  } else if (($('body').scrollTop() < soundStartY || $('body').scrollTop() > soundEndY) && soundStarted) {
     modulator.stop();
     carrier.stop();
     soundStarted = false;
@@ -312,7 +314,7 @@ Path.prototype.build = function() {
   
   
   var p0 = this.points[0].geometry.coordinates;
-  var mag = 33500;
+  var mag = 45500;
   for(var i = 0; i < this.points.length - 1; i++) {
     
     var p1 = this.points[i].geometry.coordinates;
@@ -332,8 +334,8 @@ Path.prototype.build = function() {
     $('#pathHolder').css({
         "display":"block",
         "position":"absolute",
-        "left":"48%",
-        "top":200,
+        "left":"47%",
+        "top":214,
         "z-index": -1
     })
     $('#path_' + i).append("<div id='line_" + i + "'></div>");
@@ -485,10 +487,6 @@ HRDay.prototype.render = function() {
         if (!isNaN(hr)) {
           tBPM = hr;
         }
-      
-
-      
-
       
 
       //Sort button 
