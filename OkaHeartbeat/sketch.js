@@ -7,7 +7,7 @@ var h = 450;
 
 var Member = 'Adjany';
 
-var apiEndPoint = 'https://intotheokavango.org/api/features/';
+var apiEndPoint = 'http://cors.io/?u=https://intotheokavango.org/api/features/';
 
 var days = [];
 
